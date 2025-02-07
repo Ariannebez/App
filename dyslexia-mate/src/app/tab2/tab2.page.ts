@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Camera, CameraResultType } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraPhoto } from '@capacitor/camera';
 
 @Component({
   selector: 'app-tab2',
@@ -7,24 +7,34 @@ import { Camera, CameraResultType } from '@capacitor/camera';
   styleUrls: ['tab2.page.scss'],
   standalone: false,
 })
+
 export class Tab2Page {
+
+  imageUrl: string = ''; // Store the captured image URL
 
   constructor() {}
 
-  takePicture = async () => {
-    const image = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: true,
-      resultType: CameraResultType.Uri
-    });
+  // Lifecycle hook: Runs every time the user enters the tab
+  ionViewDidEnter() {
+    this.takePicture();
+  }
 
-    // Checking if the image.webPath is defined
-    const imageUrl = image.webPath ?? '';
+  // Function to capture an image from the camera
+  async takePicture() {
+    try {
+      const image: CameraPhoto = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: true,
+        resultType: CameraResultType.Uri
+      });
 
-    const imageElement: HTMLImageElement = document.getElementById('image') as HTMLImageElement;
-    imageElement.src = imageUrl;
-  };
+      // Ensure webPath is defined before setting it
+      this.imageUrl = image.webPath ?? '';
 
+    } catch (error) {
+      console.error('Camera error:', error);
+    }
+  }
 }
 
 
