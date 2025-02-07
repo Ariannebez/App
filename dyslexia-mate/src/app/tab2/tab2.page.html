@@ -14,9 +14,6 @@
   <!-- Show the captured image if available -->
   <img *ngIf="imageUrl" [src]="imageUrl" alt="Captured Image">
 
-  <!-- Button to capture an image -->
-  <ion-button (click)="takePicture()">Take Picture</ion-button>
-
   <!-- Buttons to save or remove the image -->
   <ion-button *ngIf="imageUrl" (click)="saveImage()">Save</ion-button>
   <ion-button *ngIf="imageUrl" (click)="removeImage()">Remove</ion-button>

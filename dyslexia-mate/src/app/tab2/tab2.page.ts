@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Camera, CameraResultType, CameraPhoto } from '@capacitor/camera';
-import { ImageService } from '../image.service';  // Import the ImageService
+import { ImageService } from '../image.service';
 
 @Component({
   selector: 'app-tab2',
@@ -14,9 +14,10 @@ export class Tab2Page {
 
   constructor(private imageService: ImageService) {}
 
-  // Lifecycle hook: Runs when the user enters the tab and camera should be available.
+  // Lifecycle hook: Trigger the camera when the tab is entered
   ionViewDidEnter() {
-    console.log('Camera tab loaded');
+    console.log('Tab2 selected, camera will open.');
+    this.takePicture();  // Automatically trigger the camera when the tab is selected
   }
 
   // Function to capture an image
