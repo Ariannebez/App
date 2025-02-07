@@ -7,7 +7,18 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class Tab1Page {
+  savedImage: string = '';  // Store the saved image URL
 
   constructor() {}
 
+  // Function to save the image in Tab 1
+  saveImage(image: string) {
+    this.savedImage = image;
+  }
+
+  // Function to remove the saved image
+  removeImage() {
+    this.savedImage = '';
+  }
 }
+

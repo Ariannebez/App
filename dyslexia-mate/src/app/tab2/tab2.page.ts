@@ -7,19 +7,17 @@ import { Camera, CameraResultType, CameraPhoto } from '@capacitor/camera';
   styleUrls: ['tab2.page.scss'],
   standalone: false,
 })
-
 export class Tab2Page {
 
   imageUrl: string = ''; // Store the captured image URL
 
   constructor() {}
 
-  // Lifecycle hook: Runs every time the user enters the tab
   ionViewDidEnter() {
     this.takePicture();
   }
 
-  // Function to capture an image from the camera
+  // Function to capture an image
   async takePicture() {
     try {
       const image: CameraPhoto = await Camera.getPhoto({
@@ -28,11 +26,19 @@ export class Tab2Page {
         resultType: CameraResultType.Uri
       });
 
-      // Ensure webPath is defined before setting it
-      this.imageUrl = image.webPath ?? '';
+      this.imageUrl = image.webPath ?? '';  // Store the image URL
 
     } catch (error) {
       console.error('Camera error:', error);
     }
+  }
+
+  saveImage() {
+    console.log('Image saved:', this.imageUrl);
+    // Add the save logic here
+  }
+
+  removeImage() {
+    this.imageUrl = '';
   }
 }

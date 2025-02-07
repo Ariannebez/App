@@ -1,21 +1,17 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root' // This makes the service available globally
+  providedIn: 'root',
 })
 export class ImageService {
-
   private imageUrl: string = ''; // Store the image URL
 
-  constructor() { }
-
-  // Set the image URL
-  setImageUrl(url: string): void {
+  setImage(url: string) {
     this.imageUrl = url;
   }
 
-  // Get the stored image URL
-  getImageUrl(): string {
+  getImage(): string {
     return this.imageUrl;
   }
 }
+

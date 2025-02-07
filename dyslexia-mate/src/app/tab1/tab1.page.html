@@ -9,8 +9,17 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Files
-      </ion-title>
+      <ion-title size="large">Files</ion-title>
     </ion-toolbar>
-  </ion-header>  
+  </ion-header>
+
+  <!-- Ion card to display saved image -->
+  <ion-card *ngIf="savedImage">
+    <img [src]="savedImage" />
+    <ion-card-content>
+      <ion-button (click)="removeImage()">Remove</ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>
+
+

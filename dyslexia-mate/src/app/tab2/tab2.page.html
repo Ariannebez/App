@@ -13,8 +13,10 @@
     </ion-toolbar>
   </ion-header>
 
-  <!--This has to be activated on tab click btn
-  <img id="image" />
-  <ion-button (click)="takePicture()">Take Picture</ion-button> -->
-  
+  <!-- Show the captured image -->
+  <img *ngIf="imageUrl" [src]="imageUrl" />
+
+  <!-- Buttons to save or remove the image -->
+  <ion-button *ngIf="imageUrl" (click)="saveImage()">Save</ion-button>
+  <ion-button *ngIf="imageUrl" (click)="removeImage()">Remove</ion-button>
 </ion-content>
