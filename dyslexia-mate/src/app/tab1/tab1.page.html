@@ -13,12 +13,9 @@
     </ion-toolbar>
   </ion-header>
 
-  <!-- Ion card to display saved image -->
-  <ion-card *ngIf="savedImage">
-    <img [src]="savedImage" />
-    <ion-card-content>
-      <ion-button (click)="removeImage()">Remove</ion-button>
-    </ion-card-content>
+  <!-- Display the saved image in Tab 1 -->
+  <ion-card *ngIf="imageUrl">
+    <img [src]="imageUrl" />
   </ion-card>
 </ion-content>
 

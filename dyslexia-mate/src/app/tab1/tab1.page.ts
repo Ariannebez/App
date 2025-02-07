@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { ImageService } from '../image.service';  // Import the ImageService
 
 @Component({
   selector: 'app-tab1',
@@ -7,18 +8,15 @@ import { Component } from '@angular/core';
   standalone: false,
 })
 export class Tab1Page {
-  savedImage: string = '';  // Store the saved image URL
 
-  constructor() {}
+  imageUrl: string = ''; // Store the captured image URL
 
-  // Function to save the image in Tab 1
-  saveImage(image: string) {
-    this.savedImage = image;
+  constructor(private imageService: ImageService) {
+    // Subscribe to the image service to get the latest image URL
+    this.imageService.currentImage.subscribe((imageUrl: string) => {
+      this.imageUrl = imageUrl;
+    });
   }
 
-  // Function to remove the saved image
-  removeImage() {
-    this.savedImage = '';
-  }
 }
 

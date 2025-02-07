@@ -1,8 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Scan Text
-    </ion-title>
+    <ion-title>Scan Text</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,8 +11,11 @@
     </ion-toolbar>
   </ion-header>
 
-  <!-- Show the captured image -->
+  <!-- Display the captured image -->
   <img *ngIf="imageUrl" [src]="imageUrl" />
+
+  <!-- Camera Button -->
+  <ion-button (click)="takePicture()">Take Picture</ion-button>
 
   <!-- Buttons to save or remove the image -->
   <ion-button *ngIf="imageUrl" (click)="saveImage()">Save</ion-button>
