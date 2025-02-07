@@ -9,14 +9,20 @@ import { ImageService } from '../image.service';  // Import the ImageService
 })
 export class Tab1Page {
 
-  imageUrl: string = ''; // Store the captured image URL
+  images: string[] = [];  // Store the list of image URLs
 
   constructor(private imageService: ImageService) {
-    // Subscribe to the image service to get the latest image URL
-    this.imageService.currentImage.subscribe((imageUrl: string) => {
-      this.imageUrl = imageUrl;
+    // Subscribe to the image service to get the list of images
+    this.imageService.currentImages.subscribe((images: string[]) => {
+      this.images = images;  // Update the local list when the image list changes
     });
   }
 
+  // Method to remove an image from the list
+  removeImage(index: number) {
+    this.imageService.removeImage(index);  // Call the service to remove the image by index
+  }
+
 }
+
 

@@ -39,14 +39,15 @@ export class Tab2Page {
   // Save the image using the shared service
   saveImage() {
     if (this.imageUrl) {
-      this.imageService.changeImage(this.imageUrl);  // Send the image URL to the service
+      this.imageService.addImage(this.imageUrl);  // Send the image URL to the service to be saved
       console.log('Image saved to shared service');
+      this.imageUrl = '';  // Clear the image from the camera tab after saving
     }
   }
 
   // Remove the image in Tab 2
   removeImage() {
-    this.imageUrl = '';
+    this.imageUrl = '';  // Clear the image from Tab 2
     console.log('Image removed');
   }
 }

@@ -6,15 +6,23 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class ImageService {
 
-  // We define the type of the image URL as a string
-  private imageSource = new BehaviorSubject<string>(''); // Holds the image URL
-  currentImage = this.imageSource.asObservable(); // Expose the image as an observable
+  // Store an array of images (instead of just one)
+  private imagesSource = new BehaviorSubject<string[]>([]); 
+  currentImages = this.imagesSource.asObservable();  // Observable to get the current list of images
 
   constructor() {}
 
-  // Set the image URL (this method allows other components to update the image URL)
-  changeImage(imageUrl: string): void {
-    this.imageSource.next(imageUrl); // Update the image URL
+  // Method to add a new image URL to the list
+  addImage(imageUrl: string): void {
+    const currentImages = this.imagesSource.getValue();  // Get current list of images
+    this.imagesSource.next([...currentImages, imageUrl]);  // Add the new image and update the list
+  }
+
+  // Method to remove an image from the list by index
+  removeImage(index: number): void {
+    const currentImages = this.imagesSource.getValue();
+    currentImages.splice(index, 1);  // Remove the image at the specified index
+    this.imagesSource.next([...currentImages]);  // Update the list
   }
 }
 

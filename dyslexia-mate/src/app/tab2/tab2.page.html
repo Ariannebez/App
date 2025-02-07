@@ -11,10 +11,10 @@
     </ion-toolbar>
   </ion-header>
 
-  <!-- Display the captured image -->
-  <img *ngIf="imageUrl" [src]="imageUrl" />
+  <!-- Show the captured image if available -->
+  <img *ngIf="imageUrl" [src]="imageUrl" alt="Captured Image">
 
-  <!-- Camera Button -->
+  <!-- Button to capture an image -->
   <ion-button (click)="takePicture()">Take Picture</ion-button>
 
   <!-- Buttons to save or remove the image -->

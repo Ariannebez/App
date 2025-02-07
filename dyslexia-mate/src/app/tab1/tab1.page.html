@@ -1,8 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Files
-    </ion-title>
+    <ion-title>Files</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,9 +11,10 @@
     </ion-toolbar>
   </ion-header>
 
-  <!-- Display the saved image in Tab 1 -->
-  <ion-card *ngIf="imageUrl">
-    <img [src]="imageUrl" />
+  <!-- Display all saved images -->
+  <ion-card *ngFor="let image of images; let i = index">
+    <img [src]="image" alt="Saved Image">
+    <ion-button (click)="removeImage(i)" color="danger">Remove</ion-button>
   </ion-card>
 </ion-content>
 
