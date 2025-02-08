@@ -25,4 +25,3 @@ export class ImageService {
     this.imagesSource.next([...currentImages]);  // Update the list
   }
 }
-

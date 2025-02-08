@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ImageService } from '../image.service';  // Import the ImageService
+import { ImageService } from '../services/image.service';  // Import the ImageService
 
 @Component({
   selector: 'app-tab1',
