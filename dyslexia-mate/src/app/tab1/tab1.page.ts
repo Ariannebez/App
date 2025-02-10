@@ -1,27 +1,30 @@
 import { Component } from '@angular/core';
-import { ImageService } from '../services/image.service';  // Import the ImageService
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { Buffer } from 'buffer';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, IonicModule] // Ensure imports are here
 })
 export class Tab1Page {
+  savedTexts: string[] = [];
 
-  images: string[] = [];  // Store the list of image URLs
-
-  constructor(private imageService: ImageService) {
-    // Subscribe to the image service to get the list of images
-    this.imageService.currentImages.subscribe((images: string[]) => {
-      this.images = images;  // Update the local list when the image list changes
-    });
+  constructor() {
+    this.loadSavedTexts();
   }
 
-  // Method to remove an image from the list
-  removeImage(index: number) {
-    this.imageService.removeImage(index);  // Call the service to remove the image by index
+  loadSavedTexts() {
+    this.savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
   }
 
+  removeText(index: number) {
+    this.savedTexts.splice(index, 1);
+    localStorage.setItem('savedTexts', JSON.stringify(this.savedTexts));
+  }
 }
+
 

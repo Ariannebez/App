@@ -1,54 +1,61 @@
 import { Component } from '@angular/core';
-import { Camera, CameraResultType, CameraPhoto } from '@capacitor/camera';
-import { ImageService } from '../services/image.service';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import * as Tesseract from 'tesseract.js';
+import { NavController } from '@ionic/angular';
+import { Buffer } from 'buffer';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, IonicModule]
 })
 export class Tab2Page {
+  imageUrl: string | null = null;
+  extractedText: string = '';
 
-  imageUrl: string = ''; // Store the captured image URL
+  constructor(private navCtrl: NavController) {}
 
-  constructor(private imageService: ImageService) {}
-
-  // Lifecycle hook: Trigger the camera when the tab is entered
-  ionViewDidEnter() {
-    console.log('Tab2 selected, camera will open.');
-    this.takePicture();  // Automatically trigger the camera when the tab is selected
-  }
-
-  // Function to capture an image
-  async takePicture() {
+  async captureImage() {
     try {
-      const image: CameraPhoto = await Camera.getPhoto({
+      const image = await Camera.getPhoto({
         quality: 90,
-        allowEditing: true,
-        resultType: CameraResultType.Uri
+        source: CameraSource.Camera,
+        resultType: CameraResultType.DataUrl
       });
 
-      this.imageUrl = image.webPath ?? '';  // Store the image URL
-      console.log('Image captured:', this.imageUrl);
-
+      if (image.dataUrl) {
+        this.imageUrl = image.dataUrl;
+        this.extractText(image.dataUrl);
+      }
     } catch (error) {
-      console.error('Camera error:', error);
+      console.error('Error capturing image:', error);
     }
   }
 
-  // Save the image using the shared service
-  saveImage() {
-    if (this.imageUrl) {
-      this.imageService.addImage(this.imageUrl);  // Send the image URL to the service to be saved
-      console.log('Image saved to shared service');
-      this.imageUrl = '';  // Clear the image from the camera tab after saving
+  async extractText(image: string) {
+    try {
+      const { data: { text } } = await Tesseract.recognize(image, 'eng');
+      this.extractedText = text;
+    } catch (error) {
+      console.error('Error extracting text:', error);
     }
   }
 
-  // Remove the image in Tab 2
+  saveText() {
+    const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
+    savedTexts.push(this.extractedText);
+    localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
+
+    // Navigate to Tab1 after saving
+    this.navCtrl.navigateForward('/tabs/tab1');
+  }
+
   removeImage() {
-    this.imageUrl = '';  // Clear the image from Tab 2
-    console.log('Image removed');
+    this.imageUrl = null;
+    this.extractedText = '';
   }
 }

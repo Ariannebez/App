@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": ["tesseract.js"],
             "outputPath": "www",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -80,7 +81,7 @@
               "buildTarget": "app:build:development"
             },
             "ci": {
-              "progress": false
+              
             }
           },
           "defaultConfiguration": "development"
@@ -124,6 +125,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
+            "allowedCommonJsDependencies": ["tesseract.js"],
             "lintFilePatterns": [
               "src/**/*.ts",
               "src/**/*.html"

@@ -11,10 +11,23 @@
     </ion-toolbar>
   </ion-header>
 
-  <!-- Show the captured image if available -->
+  <!-- Capture Button -->
+  <ion-button (click)="captureImage()">Capture Image</ion-button>
+
+  <!-- Show the captured image -->
   <img *ngIf="imageUrl" [src]="imageUrl" alt="Captured Image">
 
-  <!-- Buttons to save or remove the image -->
-  <ion-button *ngIf="imageUrl" (click)="saveImage()">Save</ion-button>
+  <!-- Show Extracted Text -->
+  <ion-card *ngIf="extractedText">
+    <ion-card-header>
+      <ion-card-title>Extracted Text</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ extractedText }}</p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Buttons to save or remove -->
+  <ion-button *ngIf="extractedText" (click)="saveText()">Save Text</ion-button>
   <ion-button *ngIf="imageUrl" (click)="removeImage()">Remove</ion-button>
 </ion-content>
