@@ -12,7 +12,16 @@
   </ion-header>
 
   <!-- Capture Button -->
-  <ion-button (click)="captureImage()">Capture Image</ion-button>
+  <!--<ion-button (click)="captureImage()">Capture Image</ion-button>-->
+
+  <ion-content class="ion-padding">
+    <div class="capture-button-container">
+      <ion-button class="capture-button" (click)="captureImage()">
+        <ion-icon name="scan"></ion-icon>
+        <ion-label>Scan Text</ion-label>
+      </ion-button>
+    </div>
+  </ion-content>
 
   <!-- Show the captured image -->
   <img *ngIf="imageUrl" [src]="imageUrl" alt="Captured Image">
