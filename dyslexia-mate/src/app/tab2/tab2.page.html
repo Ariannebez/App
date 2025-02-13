@@ -12,12 +12,12 @@
   </ion-header>
 
   <!-- Capture Button -->
-  <ion-fab vertical="center" horizontal="center">
+  <!--<ion-button (click)="captureImage()">Capture Image</ion-button>-->
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
     <ion-fab-button (click)="captureImage()">
       <ion-icon name="scan"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-
 
   <!-- Show the captured image -->
   <img *ngIf="imageUrl" [src]="imageUrl" alt="Captured Image">
