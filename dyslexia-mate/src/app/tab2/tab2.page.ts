@@ -1,10 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, NavController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import * as Tesseract from 'tesseract.js';
-import { NavController } from '@ionic/angular';
-import { Buffer } from 'buffer';
 
 @Component({
   selector: 'app-tab2',
@@ -46,12 +44,18 @@ export class Tab2Page {
   }
 
   saveText() {
-    const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
-    savedTexts.push(this.extractedText);
-    localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
-
-    // Navigate to Tab1 after saving
-    this.navCtrl.navigateForward('/tabs/tab1');
+    if (this.extractedText.trim()) {
+      const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
+      savedTexts.push(this.extractedText);
+      localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
+  
+      // Clear text and image after saving
+      this.imageUrl = null;
+      this.extractedText = '';
+  
+      // Navigate to Tab1
+      this.navCtrl.navigateForward('/tabs/tab1');
+    }
   }
 
   removeImage() {
