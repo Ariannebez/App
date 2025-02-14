@@ -17,6 +17,7 @@ export class Tab2Page {
 
   constructor(private navCtrl: NavController) {}
 
+  // Taking picture using camera
   async captureImage() {
     try {
       const image = await Camera.getPhoto({
@@ -34,6 +35,7 @@ export class Tab2Page {
     }
   }
 
+  // Extracting text from image
   async extractText(image: string) {
     try {
       const { data: { text } } = await Tesseract.recognize(image, 'eng');
@@ -43,21 +45,23 @@ export class Tab2Page {
     }
   }
 
+  // Saving extracted text to tab1
   saveText() {
     if (this.extractedText.trim()) {
       const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
       savedTexts.push(this.extractedText);
       localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
   
-      // Clear text and image after saving
+      // Clearing text and image after saving to tab1 
       this.imageUrl = null;
       this.extractedText = '';
   
-      // Navigate to Tab1
+      // Navigating to Tab1
       this.navCtrl.navigateForward('/tabs/tab1');
     }
   }
 
+  // Removing image from tab2  
   removeImage() {
     this.imageUrl = null;
     this.extractedText = '';
