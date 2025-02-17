@@ -51,12 +51,20 @@ export class Tab2Page {
   async checkSpelling() {
     try {
       if (this.extractedText.trim()) {
+        // Call the spell-check API
         const response = await axios.post('https://api.abc-spell-checker.com/check', {
           text: this.extractedText
         });
 
-        // Assuming the API returns the corrected text
-        this.spellCheckedText = response.data.correctedText || this.extractedText;
+        // Log the full response for debugging
+        console.log('Spell check response:', response);
+
+        // Check if the API returned corrected text and use it
+        if (response.data && response.data.correctedText) {
+          this.spellCheckedText = response.data.correctedText; // Update spellCheckedText with corrected text
+        } else {
+          this.spellCheckedText = this.extractedText; // If no corrected text, keep the original text
+        }
       } else {
         alert('No extracted text to check.');
       }
@@ -88,4 +96,3 @@ export class Tab2Page {
     this.extractedText = '';
   }
 }
-
