@@ -1,7 +1,0 @@
-{
-  "name": "Dyslexia Mate",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
