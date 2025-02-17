@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, NavController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import * as Tesseract from 'tesseract.js';
-import { HttpClient } from '@angular/common/http';
+import axios from 'axios';
 
 @Component({
   selector: 'app-tab2',
@@ -17,7 +17,7 @@ export class Tab2Page {
   extractedText: string = '';
   spellCheckedText: string = '';
 
-  constructor(private navCtrl: NavController, private http: HttpClient) {}
+  constructor(private navCtrl: NavController) {}
 
   // Taking picture using camera
   async captureImage() {
@@ -47,58 +47,45 @@ export class Tab2Page {
     }
   }
 
-  // Spell checking extracted text using LibreSpell (LanguageTool)
-  checkSpelling() {
-    if (!this.extractedText.trim()) return;
+  // Check Spelling using an API
+  async checkSpelling() {
+    try {
+      if (this.extractedText.trim()) {
+        const response = await axios.post('https://api.abc-spell-checker.com/check', {
+          text: this.extractedText
+        });
 
-    const apiUrl = 'https://api.languagetool.org/v2/check'; // LibreSpell API
-
-    // Sending extracted text to spell check API
-    this.http.post(apiUrl, {
-      text: this.extractedText,
-      language: 'en-US' // Change to 'en-GB' if needed
-    }).subscribe(
-      (response: any) => {
-        if (response.matches.length > 0) {
-          // Replacing incorrect words with suggestions
-          let correctedText = this.extractedText;
-          response.matches.forEach((match: any) => {
-            if (match.replacements.length > 0) {
-              correctedText = correctedText.replace(match.context.text, match.replacements[0].value);
-            }
-          });
-          this.spellCheckedText = correctedText;
-        } else {
-          this.spellCheckedText = 'No spelling mistakes found.';
-        }
-      },
-      (error: any) => {
-        console.error('Error checking spelling:', error);
+        // Assuming the API returns the corrected text
+        this.spellCheckedText = response.data.correctedText || this.extractedText;
+      } else {
+        alert('No extracted text to check.');
       }
-    );
+    } catch (error) {
+      console.error('Error checking spelling:', error);
+      alert('An error occurred while checking spelling.');
+    }
   }
 
-  // Saving corrected text to tab1
+  // Saving extracted text to tab1
   saveText() {
-    if (this.spellCheckedText.trim()) {
+    if (this.extractedText.trim()) {
       const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
-      savedTexts.push(this.spellCheckedText);
+      savedTexts.push(this.extractedText);
       localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
-
-      // Clearing text and image after saving to tab1
+  
+      // Clearing text and image after saving to tab1 
       this.imageUrl = null;
       this.extractedText = '';
-      this.spellCheckedText = '';
-
+  
       // Navigating to Tab1
       this.navCtrl.navigateForward('/tabs/tab1');
     }
   }
 
-  // Removing image from tab2
+  // Removing image from tab2  
   removeImage() {
     this.imageUrl = null;
     this.extractedText = '';
-    this.spellCheckedText = '';
   }
 }
+
