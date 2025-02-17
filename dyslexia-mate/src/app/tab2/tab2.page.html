@@ -32,7 +32,19 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Buttons to save or remove -->
+  <!-- Buttons to save, remove, and spell check -->
+  <ion-button *ngIf="extractedText" (click)="checkSpelling()">Spell Check</ion-button>
   <ion-button *ngIf="extractedText" (click)="saveText()">Save Text</ion-button>
   <ion-button *ngIf="imageUrl" (click)="removeImage()">Remove</ion-button>
+
+  <!-- Show Spell Checked Text -->
+<ion-card *ngIf="spellCheckedText">
+  <ion-card-header>
+    <ion-card-title>Corrected Text</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <p>{{ spellCheckedText }}</p>
+  </ion-card-content>
+</ion-card>
+
 </ion-content>

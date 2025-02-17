@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule, NavController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import * as Tesseract from 'tesseract.js';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-tab2',
@@ -14,8 +15,9 @@ import * as Tesseract from 'tesseract.js';
 export class Tab2Page {
   imageUrl: string | null = null;
   extractedText: string = '';
+  spellCheckedText: string = '';
 
-  constructor(private navCtrl: NavController) {}
+  constructor(private navCtrl: NavController, private http: HttpClient) {}
 
   // Taking picture using camera
   async captureImage() {
@@ -45,17 +47,34 @@ export class Tab2Page {
     }
   }
 
+  // Spell checking extracted text
+  checkSpelling() {
+    if (!this.extractedText.trim()) return;
+
+    const apiUrl = 'YOUR_SPELL_CHECK_API_URL'; // Replace with a real API endpoint
+
+    this.http.post(apiUrl, { text: this.extractedText }).subscribe(
+      (response: any) => {
+        this.spellCheckedText = response.correctedText || 'No changes needed';
+      },
+      (error: any) => {
+        console.error('Error checking spelling:', error);
+      }
+    );
+  }
+
   // Saving extracted text to tab1
   saveText() {
-    if (this.extractedText.trim()) {
+    if (this.spellCheckedText.trim()) {
       const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
-      savedTexts.push(this.extractedText);
+      savedTexts.push(this.spellCheckedText);
       localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
-  
+
       // Clearing text and image after saving to tab1 
       this.imageUrl = null;
       this.extractedText = '';
-  
+      this.spellCheckedText = '';
+
       // Navigating to Tab1
       this.navCtrl.navigateForward('/tabs/tab1');
     }
@@ -65,5 +84,7 @@ export class Tab2Page {
   removeImage() {
     this.imageUrl = null;
     this.extractedText = '';
+    this.spellCheckedText = '';
   }
 }
+
