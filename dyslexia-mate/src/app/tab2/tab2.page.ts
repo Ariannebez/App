@@ -47,15 +47,30 @@ export class Tab2Page {
     }
   }
 
-  // Spell checking extracted text
+  // Spell checking extracted text using LibreSpell (LanguageTool)
   checkSpelling() {
     if (!this.extractedText.trim()) return;
 
-    const apiUrl = 'YOUR_SPELL_CHECK_API_URL'; // Replace with a real API endpoint
+    const apiUrl = 'https://api.languagetool.org/v2/check'; // LibreSpell API
 
-    this.http.post(apiUrl, { text: this.extractedText }).subscribe(
+    // Sending extracted text to spell check API
+    this.http.post(apiUrl, {
+      text: this.extractedText,
+      language: 'en-US' // Change to 'en-GB' if needed
+    }).subscribe(
       (response: any) => {
-        this.spellCheckedText = response.correctedText || 'No changes needed';
+        if (response.matches.length > 0) {
+          // Replacing incorrect words with suggestions
+          let correctedText = this.extractedText;
+          response.matches.forEach((match: any) => {
+            if (match.replacements.length > 0) {
+              correctedText = correctedText.replace(match.context.text, match.replacements[0].value);
+            }
+          });
+          this.spellCheckedText = correctedText;
+        } else {
+          this.spellCheckedText = 'No spelling mistakes found.';
+        }
       },
       (error: any) => {
         console.error('Error checking spelling:', error);
@@ -63,14 +78,14 @@ export class Tab2Page {
     );
   }
 
-  // Saving extracted text to tab1
+  // Saving corrected text to tab1
   saveText() {
     if (this.spellCheckedText.trim()) {
       const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
       savedTexts.push(this.spellCheckedText);
       localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
 
-      // Clearing text and image after saving to tab1 
+      // Clearing text and image after saving to tab1
       this.imageUrl = null;
       this.extractedText = '';
       this.spellCheckedText = '';
@@ -80,11 +95,10 @@ export class Tab2Page {
     }
   }
 
-  // Removing image from tab2  
+  // Removing image from tab2
   removeImage() {
     this.imageUrl = null;
     this.extractedText = '';
     this.spellCheckedText = '';
   }
 }
-

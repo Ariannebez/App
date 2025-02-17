@@ -12,17 +12,18 @@
   </ion-header>
 
   <!-- Capture Button -->
-  <!--<ion-button (click)="captureImage()">Capture Image</ion-button>-->
   <ion-fab vertical="bottom" horizontal="center" slot="fixed">
     <ion-fab-button (click)="captureImage()">
-      <ion-icon name="scan"></ion-icon>
+      <ion-icon name="camera"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
-  <!-- Show the captured image -->
-  <img *ngIf="imageUrl" [src]="imageUrl" alt="Captured Image">
+  <!-- Show the Captured Image -->
+  <div class="image-container" *ngIf="imageUrl">
+    <img [src]="imageUrl" alt="Captured Image">
+  </div>
 
-  <!-- Show Extracted Text -->
+  <!-- Extracted Text Card -->
   <ion-card *ngIf="extractedText">
     <ion-card-header>
       <ion-card-title>Extracted Text</ion-card-title>
@@ -32,19 +33,31 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Buttons to save, remove, and spell check -->
-  <ion-button *ngIf="extractedText" (click)="checkSpelling()">Spell Check</ion-button>
-  <ion-button *ngIf="extractedText" (click)="saveText()">Save Text</ion-button>
-  <ion-button *ngIf="imageUrl" (click)="removeImage()">Remove</ion-button>
+  <!-- Spell Checked Text Card -->
+  <ion-card *ngIf="spellCheckedText">
+    <ion-card-header>
+      <ion-card-title>Corrected Text</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ spellCheckedText }}</p>
+    </ion-card-content>
+  </ion-card>
 
-  <!-- Show Spell Checked Text -->
-<ion-card *ngIf="spellCheckedText">
-  <ion-card-header>
-    <ion-card-title>Corrected Text</ion-card-title>
-  </ion-card-header>
-  <ion-card-content>
-    <p>{{ spellCheckedText }}</p>
-  </ion-card-content>
-</ion-card>
+  <!-- Buttons Section -->
+  <!--Spell checking btn in blue-->
+  <div class="button-group" *ngIf="extractedText">
+    <ion-button expand="full" (click)="checkSpelling()">
+      <ion-icon slot="start" name="checkmark-circle"></ion-icon> Spell Check
+    </ion-button>
 
+    <!-- Save Text Button in green-->
+    <ion-button expand="full" color="success" (click)="saveText()">
+      <ion-icon slot="start" name="save"></ion-icon> Save Text
+    </ion-button>
+  </div>
+
+  <!-- Remove Image Button in red-->
+  <ion-button expand="full" color="danger" *ngIf="imageUrl" (click)="removeImage()">
+    <ion-icon slot="start" name="trash"></ion-icon> Remove
+  </ion-button>
 </ion-content>
