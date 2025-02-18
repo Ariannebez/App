@@ -47,23 +47,36 @@ export class Tab2Page {
     }
   }
 
-  // Check Spelling using an API
+  // Check Spelling using TextRazor API
   async checkSpelling() {
     try {
       if (this.extractedText.trim()) {
-        // Call the spell-check API
-        const response = await axios.post('https://api.abc-spell-checker.com/check', {
-          text: this.extractedText
+        // I need to add my TextRazor API Key
+        const apiKey = 'YOUR_TEXTRAZOR_API_KEY'; 
+
+        const response = await axios.post('https://api.textrazor.com/', null, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'x-textrazor-key': apiKey,
+          },
+          params: {
+            extractors: 'spelling',
+            text: this.extractedText,
+          }
         });
 
-        // Log the full response for debugging
-        console.log('Spell check response:', response);
+        console.log('Spell check response:', response);  // Log response for debugging
 
-        // Check if the API returned corrected text and use it
-        if (response.data && response.data.correctedText) {
-          this.spellCheckedText = response.data.correctedText; // Update spellCheckedText with corrected text
+        // Check if the response contains spelling corrections
+        if (response.data && response.data.response && response.data.response.errors) {
+          // Update spellCheckedText with corrected text from the response
+          this.spellCheckedText = this.extractedText; // Add corrected text handling logic if needed
+          response.data.response.errors.forEach((error: any) => {
+            console.log(`Error: ${error.word}`);
+            // You can display the corrections here or modify the text accordingly
+          });
         } else {
-          this.spellCheckedText = this.extractedText; // If no corrected text, keep the original text
+          this.spellCheckedText = this.extractedText;
         }
       } else {
         alert('No extracted text to check.');
@@ -96,3 +109,4 @@ export class Tab2Page {
     this.extractedText = '';
   }
 }
+
