@@ -15,18 +15,22 @@ export class Tab1Page {
   constructor() {}
 
   ionViewWillEnter() {
+    // Load saved texts when Tab1 is opened
     this.loadSavedTexts();
   }
 
   loadSavedTexts() {
-    this.savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
+    const storedTexts = localStorage.getItem('savedTexts');
+    if (storedTexts) {
+      this.savedTexts = JSON.parse(storedTexts);
+    }
   }
 
-  //Removing scanned text from tab1
-  removeText(index: number) {
-    this.savedTexts.splice(index, 1);
-    localStorage.setItem('savedTexts', JSON.stringify(this.savedTexts));
+  deleteText(index: number) {
+    this.savedTexts.splice(index, 1); // Remove the specific text
+    localStorage.setItem('savedTexts', JSON.stringify(this.savedTexts)); // Update storage
   }
+
+ 
 }
-
 

@@ -108,32 +108,40 @@ export class Tab2Page {
     }
   }
   
-
-  // Saving corrected text or original text to tab1
+  // Saving text to localStorage
   async saveText() {
-  // Check if there is any extracted text
-  if (this.spellCheckedText.trim() || this.extractedText.trim()) {
-    // Get the saved texts from localStorage, or initialize as an empty array if none exist
-    const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
-
-    // Save the corrected text or original text
-    const textToSave = this.spellCheckedText.trim() ? this.spellCheckedText : this.extractedText;
-    savedTexts.push(textToSave);
-
-    // Save the updated texts back to localStorage
-    localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
-
-    // Clear the text and image after saving to tab1
-    this.imageUrl = null;
-    this.extractedText = '';
-    this.spellCheckedText = ''; // Clear the corrected text if saved
-
-    // Navigate to Tab1
-    this.navCtrl.navigateForward('/tabs/tab1');
-  } else {
-    alert('No text to save.');
+    try {
+      // Check if there's corrected text available
+      const textToSave = this.spellCheckedText.trim() || this.extractedText.trim();
+  
+      if (!textToSave) {
+        alert('No text to save.');
+        return;
+      }
+  
+      // Retrieve saved texts from localStorage or initialize an empty array
+      const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
+  
+      // Save the corrected text (with formatting) or the original text
+      savedTexts.push(textToSave);
+  
+      // Store in localStorage
+      localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
+  
+      // Clear text and image after saving
+      this.imageUrl = null;
+      this.extractedText = '';
+      this.spellCheckedText = ''; 
+  
+      // Navigate to Tab1
+      this.navCtrl.navigateForward('/tabs/tab1');
+  
+    } catch (error) {
+      console.error('Error saving text:', error);
+      alert('An error occurred while saving the text.');
+    }
   }
-}
+  
 
 // Removing text and image from tab2 (when clicking remove)
 removeImage() {
