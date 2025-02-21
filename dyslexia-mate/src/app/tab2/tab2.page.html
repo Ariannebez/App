@@ -38,25 +38,21 @@
     <ion-card-header>
       <ion-card-title>Corrected Text</ion-card-title>
     </ion-card-header>
-    <ion-card-content>
-      <p>{{ spellCheckedText }}</p>
-    </ion-card-content>
+    <ion-card-content [innerHTML]="spellCheckedText"></ion-card-content>
   </ion-card>
 
   <!-- Buttons Section -->
-  <!--Spell checking btn in blue-->
   <div class="button-group" *ngIf="extractedText">
     <ion-button expand="full" (click)="checkSpelling()">
       <ion-icon slot="start" name="checkmark-circle"></ion-icon> Spell Check
     </ion-button>
 
-    <!-- Save Text Button in green-->
     <ion-button expand="full" color="success" (click)="saveText()">
       <ion-icon slot="start" name="save"></ion-icon> Save Text
     </ion-button>
   </div>
 
-  <!-- Remove Image Button in red-->
+  <!-- Remove Image Button -->
   <ion-button expand="full" color="danger" *ngIf="imageUrl" (click)="removeImage()">
     <ion-icon slot="start" name="trash"></ion-icon> Remove
   </ion-button>

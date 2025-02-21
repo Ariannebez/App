@@ -6,19 +6,19 @@ import * as Tesseract from 'tesseract.js';
 import axios from 'axios';
 import { AxiosError } from 'axios';
 import { environment } from 'src/environments/environment'; // Import API key securely
-
+import { FormsModule } from '@angular/forms'; 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule]
+  imports: [CommonModule, IonicModule, FormsModule,]
 })
 export class Tab2Page {
   imageUrl: string | null = null;
   extractedText: string = '';
   spellCheckedText: string = '';
-  private apiKey: string = environment.textRazorApiKey;
+  //private apiKey: string = environment.textRazorApiKey; //not being used 
 
   constructor(private navCtrl: NavController) {}
 
@@ -55,28 +55,48 @@ export class Tab2Page {
     try {
       if (this.extractedText.trim()) {
         const response = await axios.post(
-          'https://cors-anywhere.herokuapp.com/https://api.textrazor.com/',  // Using CORS proxy
+          'https://api.languagetool.org/v2/check', // Using LanguageTool API URL
           new URLSearchParams({
-            extractors: 'spelling',
-            text: this.extractedText,
+            text: this.extractedText,  // The extracted text from image to check for spelling mistakes
+            language: 'en-US',         // Setting the language to English
           }).toString(),
           {
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
-              'X-TextRazor-Key': this.apiKey,  // Ensure the API key is correct
             }
           }
         );
   
-        console.log('Spell check response:', response.data); 
+        console.log('Spell check response:', response.data);
   
-        if (response.data && response.data.response && response.data.response.errors) {
-          this.spellCheckedText = this.extractedText;
-          response.data.response.errors.forEach((error: any) => {
-            console.log(`Error: ${error.word}`);
+        let correctedText = this.extractedText;
+  
+        if (response.data && response.data.matches.length > 0) {
+          // Iterate through the matches and replace incorrect words with the first suggested correction
+          response.data.matches.forEach((match: any) => {
+            if (match.replacements.length > 0) {
+              const incorrectWord = match.context.text.trim();
+              const replacement = match.replacements[0].value; // Get the first suggestion
+  
+              console.log('Incorrect word:', incorrectWord, 'Corrected to:', replacement); // Log replacement
+  
+              // Highlight incorrect word in red and replace it with the suggested correction
+              const highlightedWord = `<span class="incorrect-word">${incorrectWord}</span>`;
+              correctedText = correctedText.replace(
+                new RegExp(`\\b${incorrectWord}\\b`, 'g'), // Use word boundaries to replace only the full word
+                highlightedWord
+              );
+              correctedText = correctedText.replace(
+                new RegExp(`\\b${incorrectWord}\\b`, 'g'), // Replace incorrect word with the corrected one
+                replacement
+              );
+            }
           });
+  
+          // Assign the corrected text to the UI element
+          this.spellCheckedText = correctedText; // Store the corrected text for display
         } else {
-          this.spellCheckedText = this.extractedText;
+          this.spellCheckedText = this.extractedText; // No mistakes, keep the original text
         }
       } else {
         alert('No extracted text to check.');
@@ -84,38 +104,49 @@ export class Tab2Page {
     } catch (error: unknown) {
       console.error('Error checking spelling:', error);
   
-      // Check if the error is an instance of AxiosError
       if (axios.isAxiosError(error)) {
-        console.error('Axios Error Response:', error.response);
-        alert(`API Error: ${error.response?.statusText}`);
+        console.error('Axios Error:', error.response);
+        alert(`API Error: ${error.response?.statusText || 'Unknown error'}`);
       } else {
         console.error('Unknown Error:', error);
         alert('An error occurred while checking spelling.');
       }
     }
   }
-  
-  // Saving extracted text to tab1
-  saveText() {
-    if (this.extractedText.trim()) {
-      const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
-      savedTexts.push(this.extractedText);
-      localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
 
-      // Clearing text and image after saving to tab1 
-      this.imageUrl = null;
-      this.extractedText = '';
+  // Saving corrected text or original text to tab1
+  async saveText() {
+  // Check if there is any extracted text
+  if (this.spellCheckedText.trim() || this.extractedText.trim()) {
+    // Get the saved texts from localStorage, or initialize as an empty array if none exist
+    const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
 
-      // Navigating to Tab1
-      this.navCtrl.navigateForward('/tabs/tab1');
-    }
-  }
+    // Save the corrected text or original text
+    const textToSave = this.spellCheckedText.trim() ? this.spellCheckedText : this.extractedText;
+    savedTexts.push(textToSave);
 
-  // Removing image from tab2  
-  removeImage() {
+    // Save the updated texts back to localStorage
+    localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
+
+    // Clear the text and image after saving to tab1
     this.imageUrl = null;
     this.extractedText = '';
+    this.spellCheckedText = ''; // Clear the corrected text if saved
+
+    // Navigate to Tab1
+    this.navCtrl.navigateForward('/tabs/tab1');
+  } else {
+    alert('No text to save.');
   }
+}
+
+// Removing text and image from tab2 (when clicking remove)
+removeImage() {
+  // Clear both the image and extracted text
+  this.imageUrl = null;
+  this.extractedText = '';
+  this.spellCheckedText = ''; // Ensure corrected text is also cleared
+}
 }
 
 

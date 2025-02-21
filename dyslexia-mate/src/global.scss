@@ -36,5 +36,9 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import "@ionic/angular/css/palettes/dark.system.css";
 
-
+// Changing colour to red for incorrect words
+.incorrect-word {
+    color: red;
+    font-weight: bold;
+  }
   
