@@ -55,10 +55,10 @@ export class Tab2Page {
     try {
       if (this.extractedText.trim()) {
         const response = await axios.post(
-          'https://api.languagetool.org/v2/check', // Using LanguageTool API URL
+          'https://api.languagetool.org/v2/check', // LanguageTool API URL
           new URLSearchParams({
             text: this.extractedText,  // The extracted text from image to check for spelling mistakes
-            language: 'en-US',         // Setting the language to English
+            language: 'en-US',         // Set the language to English
           }).toString(),
           {
             headers: {
@@ -69,34 +69,28 @@ export class Tab2Page {
   
         console.log('Spell check response:', response.data);
   
-        let correctedText = this.extractedText;
+        let correctedText = this.extractedText; // Start with the full text
   
         if (response.data && response.data.matches.length > 0) {
-          // Iterate through the matches and replace incorrect words with the first suggested correction
           response.data.matches.forEach((match: any) => {
             if (match.replacements.length > 0) {
-              const incorrectWord = match.context.text.trim();
-              const replacement = match.replacements[0].value; // Get the first suggestion
+              const incorrectWord = match.context.text.substring(match.offset, match.offset + match.length); // Extract incorrect word
+              const replacement = match.replacements[0].value; // Use first suggestion as the correct word
   
-              console.log('Incorrect word:', incorrectWord, 'Corrected to:', replacement); // Log replacement
+              console.log(`Incorrect: "${incorrectWord}" → Corrected: "${replacement}"`);
   
-              // Highlight incorrect word in red and replace it with the suggested correction
-              const highlightedWord = `<span class="incorrect-word">${incorrectWord}</span>`;
+              // Replace incorrect word with highlighted incorrect word and correct word in brackets
               correctedText = correctedText.replace(
-                new RegExp(`\\b${incorrectWord}\\b`, 'g'), // Use word boundaries to replace only the full word
-                highlightedWord
-              );
-              correctedText = correctedText.replace(
-                new RegExp(`\\b${incorrectWord}\\b`, 'g'), // Replace incorrect word with the corrected one
-                replacement
+                new RegExp(`\\b${incorrectWord}\\b`, 'gi'), 
+                `<span class="incorrect-word">${incorrectWord}</span> (<span class="correct-word">${replacement}</span>)`
               );
             }
           });
   
-          // Assign the corrected text to the UI element
-          this.spellCheckedText = correctedText; // Store the corrected text for display
+          // Store the fully corrected and highlighted text
+          this.spellCheckedText = correctedText;
         } else {
-          this.spellCheckedText = this.extractedText; // No mistakes, keep the original text
+          this.spellCheckedText = this.extractedText; // No mistakes, keep original text
         }
       } else {
         alert('No extracted text to check.');
@@ -113,6 +107,7 @@ export class Tab2Page {
       }
     }
   }
+  
 
   // Saving corrected text or original text to tab1
   async saveText() {
