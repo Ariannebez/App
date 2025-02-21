@@ -4,6 +4,8 @@ import { IonicModule, NavController } from '@ionic/angular';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import * as Tesseract from 'tesseract.js';
 import axios from 'axios';
+import { AxiosError } from 'axios';
+import { environment } from 'src/environments/environment'; // Import API key securely
 
 @Component({
   selector: 'app-tab2',
@@ -16,6 +18,7 @@ export class Tab2Page {
   imageUrl: string | null = null;
   extractedText: string = '';
   spellCheckedText: string = '';
+  private apiKey: string = environment.textRazorApiKey;
 
   constructor(private navCtrl: NavController) {}
 
@@ -47,33 +50,30 @@ export class Tab2Page {
     }
   }
 
-  // Check Spelling using TextRazor API
+  // Checking spelling of extracted text
   async checkSpelling() {
     try {
       if (this.extractedText.trim()) {
-        // I need to add my TextRazor API Key
-        const apiKey = 'YOUR_TEXTRAZOR_API_KEY'; 
-
-        const response = await axios.post('https://api.textrazor.com/', null, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'x-textrazor-key': apiKey,
-          },
-          params: {
+        const response = await axios.post(
+          'https://cors-anywhere.herokuapp.com/https://api.textrazor.com/',  // Using CORS proxy
+          new URLSearchParams({
             extractors: 'spelling',
             text: this.extractedText,
+          }).toString(),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-TextRazor-Key': this.apiKey,  // Ensure the API key is correct
+            }
           }
-        });
-
-        console.log('Spell check response:', response);  // Log response for debugging
-
-        // Check if the response contains spelling corrections
+        );
+  
+        console.log('Spell check response:', response.data); 
+  
         if (response.data && response.data.response && response.data.response.errors) {
-          // Update spellCheckedText with corrected text from the response
-          this.spellCheckedText = this.extractedText; // Add corrected text handling logic if needed
+          this.spellCheckedText = this.extractedText;
           response.data.response.errors.forEach((error: any) => {
             console.log(`Error: ${error.word}`);
-            // You can display the corrections here or modify the text accordingly
           });
         } else {
           this.spellCheckedText = this.extractedText;
@@ -81,23 +81,31 @@ export class Tab2Page {
       } else {
         alert('No extracted text to check.');
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error checking spelling:', error);
-      alert('An error occurred while checking spelling.');
+  
+      // Check if the error is an instance of AxiosError
+      if (axios.isAxiosError(error)) {
+        console.error('Axios Error Response:', error.response);
+        alert(`API Error: ${error.response?.statusText}`);
+      } else {
+        console.error('Unknown Error:', error);
+        alert('An error occurred while checking spelling.');
+      }
     }
   }
-
+  
   // Saving extracted text to tab1
   saveText() {
     if (this.extractedText.trim()) {
       const savedTexts = JSON.parse(localStorage.getItem('savedTexts') || '[]');
       savedTexts.push(this.extractedText);
       localStorage.setItem('savedTexts', JSON.stringify(savedTexts));
-  
+
       // Clearing text and image after saving to tab1 
       this.imageUrl = null;
       this.extractedText = '';
-  
+
       // Navigating to Tab1
       this.navCtrl.navigateForward('/tabs/tab1');
     }
@@ -109,4 +117,5 @@ export class Tab2Page {
     this.extractedText = '';
   }
 }
+
 
